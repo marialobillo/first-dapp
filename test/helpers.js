@@ -3,3 +3,6 @@ export const tokens = (number) => {
         web3.utils.toWei(number.toString(), 'ether')
     )
 }
+
+
+export const EVM_REVERT = 'VM Exception while processing transaction: revert';
