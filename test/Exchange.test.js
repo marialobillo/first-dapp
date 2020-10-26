@@ -72,6 +72,33 @@ contract('Exchange', ([deployer, feeAccount, user1]) => {
 
   })
 
+    describe('withdrawing Ether', async () => {
+        let result 
+        let amount
+
+        beforeEach(async () => {
+            // Deposit Ether first
+            amount = ether(1)
+            await exchange.depositEther({ from: user1, value: amount })
+        })
+
+        describe('success', async () => {
+            beforeEach(async () => {
+                // Withdraw Ether 
+                result = await exchange.withdrawEther(ether(1), { from: user1 })
+            })
+
+            it('withdraw Ether funds', async () => {
+                const balance = await exchange.tokens(ETHER_ADDRESS, user1)
+                balance.toString().should.equal('0')
+            })
+        })
+
+        describe('failure', async () => {
+
+        })
+    })
+
     describe('depositing tokens', () => {
       let result
       let amount
