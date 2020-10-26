@@ -28,6 +28,7 @@ contract Exchange {
 
     // Events
     event Deposit(address token, address user, uint256 amount, uint256 balance);
+    event Withdraw(address token, address user, uint amount, uint balance);
 
     constructor (address _feeAccount, uint256 _feePercent) public {
         feeAccount = _feeAccount;
@@ -45,7 +46,10 @@ contract Exchange {
     }
 
     function withdrawEther(uint _amount) public {
+        require(tokens[ETHER][msg.sender] >= _amount);
         tokens[ETHER][msg.sender] = tokens[ETHER][msg.sender].sub(_amount);
+        msg.sender.transfer(_amount);
+        emit Withdraw(ETHER, msg.sender, _amount, tokens[ETHER][msg.sender]);
     }
 
     function depositToken(address _token, uint _amount) public {
