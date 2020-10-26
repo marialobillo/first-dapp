@@ -165,4 +165,30 @@ contract('Exchange', ([deployer, feeAccount, user1]) => {
 
   })
 
+
+    describe('withdrawing tokens', async () => {
+        let result 
+        let amount
+        
+        describe('success', async () => {
+            beforeEach(async () => {
+                // Deposit tokens first
+                amount = tokens(10)
+                await token.approve(exchange.address, amount, { from: user1 })
+                await exchange.depositToken(token.address, amount, { from: user1 })
+
+                // Withdraw tokens 
+                result = await exchange.withdrawToken(token.address, amount, { from: user1 })
+            })
+
+            it('withdraws token funds', async () => {
+                const balance = await exchange.tokens(token.address, user1)
+                balance.toString().should.equal('0')
+            })
+        })
+
+        describe('failure', async () => {
+            
+        })
+    })
 })
