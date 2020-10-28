@@ -8,11 +8,11 @@ import "./Token.sol";
 // TODO:
 // [x] Set the fee
 // [x] Deposit Ether 
-// [ ] Withdraw Ether 
+// [x] Withdraw Ether 
 // [x] Deposit tokens 
-// [ ] Withdraw tokens 
-// [ ] Check Balances 
-// [ ] Make order 
+// [x] Withdraw tokens 
+// [x] Check Balances 
+// [x] Make order 
 // [ ] Cancel order 
 // [ ] Fill order
 // [ ] Charge fees
@@ -25,10 +25,34 @@ contract Exchange {
     uint256 public feePercent; // the fee percentage
     address constant ETHER = address(0); // store Ether in tokens mapping with blank address
     mapping(address => mapping(address => uint256)) public tokens;
+    mapping(uint256 => _Order) public orders;
+    uint256 public orderCount;
 
     // Events
     event Deposit(address token, address user, uint256 amount, uint256 balance);
-    event Withdraw(address token, address user, uint amount, uint balance);
+    event Withdraw(address token, address user, uint256 amount, uint256 balance);
+    event Order(
+        uint id,
+        address user,
+        address tokenGet, 
+        uint amountGet, 
+        address tokenGive, 
+        uint amountGive,
+        uint timestamp
+    );
+
+    // Structs
+    struct _Order {
+        uint id;
+        address user;
+        address tokenGet;
+        uint amountGet;
+        address tokenGive;
+        uint amountGive;
+        uint timestamp;
+    }
+
+
 
     constructor (address _feeAccount, uint256 _feePercent) public {
         feeAccount = _feeAccount;
@@ -36,7 +60,7 @@ contract Exchange {
     }
 
     // Fallback: reverts if Ether is sent to this smart contract by mistake
-    fallback() external payable {
+    fallback() external {
         revert();
     }
 
@@ -60,7 +84,25 @@ contract Exchange {
     }
 
     function withdrawToken(address _token, uint256 _amount) public {
+        require(_token != ETHER);
+        require(tokens[_token][msg.sender] >= _amount);
         tokens[_token][msg.sender] = tokens[_token][msg.sender].sub(_amount);
         require(Token(_token).transfer(msg.sender, _amount));
+        emit Withdraw(_token, msg.sender, _amount, tokens[_token][msg.sender]);
     }
+
+    function balanceOf(address _token, address _user) public view returns (uint256){
+        return tokens[_token][_user];
+    }
+
+    function makeOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) public {
+        orderCount = orderCount.add(1);
+        orders[orderCount] = _Order(orderCount, msg.sender, _tokenGet, _amountGet, _tokenGive, _amountGive, now);
+        emit Order(orderCount, msg.sender, _tokenGet, _amountGet, _tokenGive, _amountGive, now);
+    }
+
+    function cancelOrder(uint256 _id) public {
+        
+    }
+
 }
