@@ -10,7 +10,7 @@ require('chai')
   .should()
 
 // eslint-disable-next-line no-undef
-contract('Exchange', ([deployer, feeAccount, user1]) => {
+contract('Exchange', ([deployer, feeAccount, user1, user2]) => {
     let token
     let exchange 
     const feePercent = 10
@@ -285,7 +285,15 @@ contract('Exchange', ([deployer, feeAccount, user1]) => {
             })
 
             describe('failure', async () => {
-                // TODO
+                it('rejects invalid order ids', async () => {
+                    const invalidOrderId = 99999
+                    await exchange.cancelOrder(invalidOrderId, { from: user1 }).should.be.rejectedWith(EVM_REVERT)
+                  })
+          
+                  it('rejects unauthorized cancelations', async () => {
+                    // Try to cancel the order from another user
+                    await exchange.cancelOrder('1', { from: user2 }).should.be.rejectedWith(EVM_REVERT)
+                  })
             })
         })
     })
