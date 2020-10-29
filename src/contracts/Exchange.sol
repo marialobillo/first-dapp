@@ -13,7 +13,7 @@ import "./Token.sol";
 // [x] Withdraw tokens 
 // [x] Check Balances 
 // [x] Make order 
-// [ ] Cancel order 
+// [x] Cancel order 
 // [ ] Fill order
 // [ ] Charge fees
 
