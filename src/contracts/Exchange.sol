@@ -28,6 +28,7 @@ contract Exchange {
     mapping(uint256 => _Order) public orders;
     uint256 public orderCount;
     mapping(uint256 => bool) public orderCancelled;
+    mapping(uint256 => bool) public orderFilled;
 
     // Events
     event Deposit(address token, address user, uint256 amount, uint256 balance);
@@ -133,11 +134,14 @@ contract Exchange {
     }
 
     function fillOrder(uint256 _id) public {
+        require(_id > 0 && _id <= orderCount);
+        require(!orderFilled[_id]);
+        require(!orderCancelled[_id]);
         // Fetch the Order
         _Order storage _order = orders[_id];
         _trade(_order.id, _order.user, _order.tokenGet, _order.amount_Get, _order.tokenGive, _order.amountGive);
         // Mark order as filled
-
+        orderFilled[_order.id] = true;
     }
 
     function _trade(uint256 _orderId, address _user, address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) internal {
