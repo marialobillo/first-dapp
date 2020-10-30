@@ -14,8 +14,8 @@ import "./Token.sol";
 // [x] Check Balances 
 // [x] Make order 
 // [x] Cancel order 
-// [ ] Fill order
-// [ ] Charge fees
+// [x] Fill order
+// [x] Charge fees
 
 contract Exchange {
     using SafeMath for uint;
@@ -139,7 +139,7 @@ contract Exchange {
         require(!orderCancelled[_id]);
         // Fetch the Order
         _Order storage _order = orders[_id];
-        _trade(_order.id, _order.user, _order.tokenGet, _order.amount_Get, _order.tokenGive, _order.amountGive);
+        _trade(_order.id, _order.user, _order.tokenGet, _order.amountGet, _order.tokenGive, _order.amountGive);
         // Mark order as filled
         orderFilled[_order.id] = true;
     }
@@ -151,7 +151,7 @@ contract Exchange {
 
         // Excute trade
         tokens[_tokenGet][msg.sender] = tokens[_tokenGet][msg.sender].sub(_amountGet.add(_feeAmount));
-        tokens[_tokenGet][_user] = tokens[_tokenGet][user].add(_amountGet);
+        tokens[_tokenGet][_user] = tokens[_tokenGet][_user].add(_amountGet);
 
         tokens[_tokenGet][feeAccount] = tokens[_tokenGet][feeAccount].add(_feeAmount);
 
